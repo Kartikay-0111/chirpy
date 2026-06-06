@@ -83,3 +83,19 @@ func MakeRefreshToken() string {
     encodedStr := hex.EncodeToString(b)
     return encodedStr
 }
+
+
+// extract the api key from the Authorization header, which is expected to be in this format:
+// Authorization: ApiKey THE_KEY_HERE
+// need to strip out the ApiKey part and the whitespace and return just the key.
+func GetAPIKey(headers http.Header) (string, error) {
+    header := headers.Get("Authorization")
+    if header == "" {
+        return "", fmt.Errorf("API key missing")
+    }
+    parts := strings.SplitN(header, " ", 3)
+    if len(parts) != 3 || strings.ToLower(parts[0]) != "apikey" {
+        return "", fmt.Errorf("invalid API key format")
+    }
+    return parts[2], nil
+}
